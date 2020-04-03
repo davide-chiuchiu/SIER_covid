@@ -1,8 +1,11 @@
-function [t,compartments] = SEIR(tspan, parameters)
+function [t,compartments] = SEIR(tspan, parameters, equation_type)
 
-
-starting_compartments = [parameters.okinawa_population - parameters.initial_infected, 0, parameters.initial_infected, 0]; % in order S E I R
-[t,compartments] = ode45(@(t, compartments) equations(t, compartments, parameters), tspan, starting_compartments);
+if strcmp(equation_type, 'crude_estimate')
+    starting_compartments = [parameters.okinawa_population - parameters.initial_infected, 0, parameters.initial_infected, 0]; % in order S E I R
+    [t,compartments] = ode45(@(t, compartments) equations(t, compartments, parameters), tspan, starting_compartments);
+else
+    error('unknown equations')
+end
 
 
 end
