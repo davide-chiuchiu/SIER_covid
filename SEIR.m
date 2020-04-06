@@ -6,7 +6,7 @@ end
 
 
 function d_compartments = equations(~, compartments, parameters, equation_types)
-    if strcmp(equation_types, 'crude_estimates')
+    if strcmp(equation_types, 'crude_estimates') || strcmp(equation_types, 'suppressed_crude_estimates')
         d_compartments = zeros(size(compartments));
         d_compartments(1) = -parameters.beta * compartments(1) * compartments(3) / parameters.okinawa_population;
         d_compartments(2) = parameters.beta * compartments(1) * compartments(3) / parameters.okinawa_population - parameters.sigma * compartments(2);

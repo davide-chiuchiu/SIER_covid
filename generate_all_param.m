@@ -13,8 +13,27 @@ function all_parameters = generate_all_param(initial_infected_estimates, gamma_e
         all_parameters = struct('sigma_estimates', sigma_estimates, 'gamma_estimates', gamma_estimates, ...
                                 'beta_estimates', beta_estimates, 'okinawa_population', okinawa_population, ...
                                 'initial_infected_estimates', initial_infected_estimates);
+                            
+    elseif strcmp(equation_type, 'suppressed_crude_estimates')
+        % estimated parameters from Ferretti et al and from Wu et al
+        R0_estimates = pearsrnd(2, 0.1, 4.5, 200, 1, n_curves) .* (0.5 + 0.2 * rand(1, n_curves)); % distribution is made by hand to fit 90% CI with values from Feretti et al.
+            % suppression is estimated to be 0.5 to 0.7 of R0 from Wu,
+            % using data of 1918 spanish flu.
+        beta_estimates = R0_estimates .* gamma_estimates;
+        
+        selector = (sigma_estimates > 0) & (gamma_estimates > 0) & (beta_estimates > 0);
+        sigma_estimates = sigma_estimates(selector);
+        gamma_estimates = gamma_estimates(selector);
+        initial_infected_estimates = initial_infected_estimates(selector);
+        beta_estimates = beta_estimates(selector);
+
+        all_parameters = struct('sigma_estimates', sigma_estimates, 'gamma_estimates', gamma_estimates, ...
+                                'beta_estimates', beta_estimates, 'okinawa_population', okinawa_population, ...
+                                'initial_infected_estimates', initial_infected_estimates);
+                            
+                            
     elseif strcmp(equation_type, 'multiple_channels')
-        R0_estimates = 1.7 + rand(1, n_curves) * (2.5 - 1.7);
+        R0_estimates = pearsrnd(2, 0.1, 4.5, 200, 1, n_curves); % distribution is made by hand to fit 90% CI with values from Feretti et al.
         R0_presymptomatic = 0.9 + 0.2 * randn(1, n_curves);
         R0_symptomatic = 0.8 + 0.2 * randn(1, n_curves);
         R0_asymptomatic = R0_estimates - R0_presymptomatic - R0_symptomatic;
