@@ -1,6 +1,6 @@
 function meta_parameters = compute_meta_patameter_estimates(n_curves, gamma_estimates, sigma_estimates, equation_type)
     
-    if strcmp(equation_type, 'crude_estimate')
+    if strcmp(equation_type, 'crude_estimates')
         R0_estimates = 1.7 + rand(1, n_curves) * (2.5 - 1.7);
         beta_estimates = R0_estimates .* gamma_estimates;
         selector = (sigma_estimates > 0) & (gamma_estimates > 0) & (beta_estimates > 0);

@@ -1,7 +1,7 @@
 function all_parameters = generate_all_param(initial_infected_estimates, gamma_estimates, sigma_estimates, n_curves, okinawa_population, equation_type)
     if strcmp(equation_type, 'crude_estimates')    
         % estimated parameters from Ferretti et al
-        R0_estimates = 1.7 + rand(1, n_curves) * (2.5 - 1.7);
+        R0_estimates = pearsrnd(2, 0.1, 4.5, 200, 1, n_curves); % distribution is made by hand to fit 90% CI with values from Feretti et al.
         beta_estimates = R0_estimates .* gamma_estimates;
         
         selector = (sigma_estimates > 0) & (gamma_estimates > 0) & (beta_estimates > 0);
