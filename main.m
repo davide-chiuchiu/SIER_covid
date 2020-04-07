@@ -1,4 +1,4 @@
-ì% hyperparameters
+% hyperparameters
 n_curves = 3000;
 
 % parameters to make simulations [from Corona tracker]
@@ -10,8 +10,11 @@ average_serial_interval = 7.2;
 okinawa_population = 1468301;
 initial_infected = 9;
 
-[t_no_cont, quantiles_infected_no_cont] = Initialize_SEIR('crude_estimates', n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected);
-[t_cont, quantiles_infected_cont] = Initialize_SEIR('suppressed_crude_estimates', n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected);
+time = datetime(2020,04,03,0,0,0) : datetime(2020,08,30,0,0,0);
+tspan = 1 : length(time);
+
+[t_no_cont, quantiles_infected_no_cont] = Initialize_SEIR('crude_estimates', tspan, n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected);
+[t_cont, quantiles_infected_cont] = Initialize_SEIR('suppressed_crude_estimates', tspan, n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected);
 
 quantiles_severe_cases_no_cont = 0.15 * quantiles_infected_no_cont;
 quantiles_severe_cases_cont = 0.15 * quantiles_infected_cont;
@@ -20,18 +23,18 @@ quantiles_critical_cases_cont = 0.05 * quantiles_infected_cont;
 
 figure(1)
 subplot(2,3,1)
-plot_stuff(t_no_cont, quantiles_infected_no_cont, 'Infected no containment')
+plot_stuff(time, quantiles_infected_no_cont, 'Infected no containment')
 subplot(2,3,2)
-plot_stuff(t_no_cont, quantiles_severe_cases_no_cont, 'Severe no containment')
+plot_stuff(time, quantiles_severe_cases_no_cont, 'Severe no containment')
 subplot(2,3,3)
-plot_stuff(t_no_cont, quantiles_critical_cases_no_cont, 'critical no containment')
+plot_stuff(time, quantiles_critical_cases_no_cont, 'critical no containment')
 
 subplot(2,3,4)
-plot_stuff(t_cont, quantiles_infected_cont, 'Infected containment')
+plot_stuff(time, quantiles_infected_cont, 'Infected containment')
 subplot(2,3,5)
-plot_stuff(t_cont, quantiles_severe_cases_cont, 'Severe containment')
+plot_stuff(time, quantiles_severe_cases_cont, 'Severe containment')
 subplot(2,3,6)
-plot_stuff(t_cont, quantiles_critical_cases_cont, 'Critical containment')
+plot_stuff(time, quantiles_critical_cases_cont, 'Critical containment')
 
 
 % 9 infected at Friday 3rd of April

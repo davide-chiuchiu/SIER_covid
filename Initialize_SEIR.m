@@ -1,4 +1,4 @@
-function [t, quantiles_infected] = Initialize_SEIR(equation_type, n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected)
+function [t, quantiles_infected] = Initialize_SEIR(equation_type, tspan, n_curves, central_incubation_period, std_incubation_period, average_serial_interval, okinawa_population, initial_infected)
     initial_infected_estimates = initial_infected -1 + randi(10, 1, n_curves);
 
     % estimates parameters from Ferretti et al (equation independent)
@@ -10,7 +10,6 @@ function [t, quantiles_infected] = Initialize_SEIR(equation_type, n_curves, cent
     all_parameters = generate_all_param(initial_infected_estimates, gamma_estimates, sigma_estimates, n_curves, okinawa_population, equation_type);
 
     % empty vectors for simulation
-    tspan = 0 : 400;
     effective_n_curves = length(all_parameters.sigma_estimates);
     infected_curves = zeros(effective_n_curves, length(tspan));
     
