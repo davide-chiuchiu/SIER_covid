@@ -2,7 +2,7 @@
 json_name = 'covid.params.json';
 
 % hyperparameters
-n_curves = 3000;
+n_curves = 5000;
 
 % parameters to make simulations [from Corona tracker]
 central_incubation_period = 1.644;
@@ -28,17 +28,32 @@ SEIR_metaparameters = struct('tspan', tspan, 'n_curves', n_curves, ...
 [t_no_cont, quantiles_infected_no_cont] = Initialize_SEIR('crude_estimates', SEIR_metaparameters);
 [t_cont, quantiles_infected_cont] = Initialize_SEIR('suppressed_crude_estimates', SEIR_metaparameters);
 
-estimate_severe_critical_deaths(quantiles_infected_no_cont)
+[severe_cases_no_cont, critical_cases_no_cont, death_cases_no_cont] = severe_critical_dead_quantiles(quantiles_infected_no_cont, json_name);
+[severe_cases_cont, critical_cases_cont, death_cases_cont] = severe_critical_dead_quantiles(quantiles_infected_cont, json_name);
 
 figure(1)
 subplot(1,2,1)
 plot_stuff(time, quantiles_infected_no_cont, 'Infected no containment')
-
-
 subplot(1,2,2)
 plot_stuff(time, quantiles_infected_cont, 'Infected containment')
 
+figure(2)
+subplot(1,2,1)
+plot_stuff(time, severe_cases_no_cont, 'Severe cases no containment')
+subplot(1,2,2)
+plot_stuff(time, severe_cases_cont, 'Severe cases containment')
+
+figure(3)
+subplot(1,2,1)
+plot_stuff(time, critical_cases_no_cont, 'Critical cases no containment')
+subplot(1,2,2)
+plot_stuff(time, critical_cases_cont, 'Critical cases containment')
+
+total_deaths_no_cont = compute_total_deaths(death_cases_no_cont, 'without containment');
+total_deaths_cont = compute_total_deaths(death_cases_cont, 'with containment');
 
 
 % 9 infected at Friday 3rd of April
 % 18 infected at Monday 6th of April
+% 34 infected at Tuesday 7th of April
+% 39 infected at Wednesday 8th of Aprildisp([' best case scenario: ' num2str(total_deaths_no_containments(1))])

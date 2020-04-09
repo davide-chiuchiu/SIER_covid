@@ -23,6 +23,6 @@ function [t, quantiles_infected] = Initialize_SEIR(equation_type, SEIR_metaparam
     end
     toc
 
-    quantiles_infected = quantile(infected_curves, [0.1, 0.5, 0.9]);
+    quantiles_infected = quantile(infected_curves, [0.05, 0.5, 0.95]);
 
 end
