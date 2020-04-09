@@ -8,7 +8,7 @@ library(gridExtra)
 setwd("~/Documents/SIER_covid/Data_from_online_SEIR")
 
 # file names
-no_mitigation       <- 'covid.results.deterministic_no_mitigation.csv'
+no_mitigation       <- 'covid.results.deterministic_no_mitigation.tsv'
 moderate_mitigation <- 'covid.results.deterministic_moderate_mitigation.csv'
 strong_mitigation   <- 'covid.results.deterministic_strong_mitigation.csv'
 
@@ -45,11 +45,19 @@ covid_dataframe %>% ggplot(aes(x = time, y = counts, color = observable)) +
   facet_wrap( ~ mitigation_type ) +
   scale_y_log10()
 
+covid_dataframe %>% filter(mitigation_type == 'No mitigation') %>%
+  ggplot(aes(x = time, y = counts, color = observable)) +
+  geom_hline(aes(yintercept= 100, linetype = "ICU beds")) +
+  geom_hline(aes(yintercept= 8199, linetype = "Total hospital beds")) +
+  geom_line() +
+  scale_y_log10()
+
 summary_cases %>% ggplot(aes(x = mitigation_type, y = total_nums)) +
   geom_col() +
   facet_wrap( ~ totals ) + 
   scale_y_log10() +
   coord_flip()
+
 
 pdf("summary_totalss.pdf", height=11, width=10)
 grid.table(proto_summary_cases)
