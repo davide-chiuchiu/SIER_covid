@@ -1,7 +1,7 @@
 function [t,compartments] = SEIR(tspan, parameters, equation_types)
     starting_compartments = [parameters.okinawa_population - parameters.initial_infected, parameters.initial_infected, parameters.initial_infected, 0]; % in order S E I R
     [t,compartments] = ode45(@(t, compartments) equations(t, compartments, parameters, equation_types), tspan, starting_compartments);
-
+    compartments = floor(compartments);
 end
 
 

@@ -7,5 +7,6 @@ function plot_stuff(t, quantiles, label_y)
     hold off
     ylabel(label_y)
     xlabel('Time [days]')
+    set(gca, 'yScale', 'log')
     legend('show')    
 end
