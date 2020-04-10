@@ -7,7 +7,7 @@ function [t, quantiles_infected] = Initialize_SEIR(equation_type, SEIR_metaparam
     gamma_estimates = 1 ./ (SEIR_metaparameters.average_serial_interval - incubation_time_estimates);
 
     % estimates parameters from Ferretti et al (equation dependent)
-    all_parameters = generate_all_param(initial_infected_estimates, gamma_estimates, sigma_estimates, SEIR_metaparameters.n_curves, SEIR_metaparameters.okinawa_population, equation_type);
+    all_parameters = generate_all_param(initial_infected_estimates, gamma_estimates, sigma_estimates, SEIR_metaparameters, equation_type);
 
     % empty vectors for simulation
     effective_SEIR_metaparameters.n_curves = length(all_parameters.sigma_estimates);
@@ -23,6 +23,12 @@ function [t, quantiles_infected] = Initialize_SEIR(equation_type, SEIR_metaparam
     end
     toc
 
+    % filtering out results that are not consistent with the measured data
+    % for Okinawa
+%     known_data = '';
+%     infected_curves = scrawny_bayesian_inference(infected_curves, known_data, SEIR_metaparameters.json_name);
+    
+   % computing quantiles
     quantiles_infected = quantile(infected_curves, [0.05, 0.5, 0.95]);
 
 end
