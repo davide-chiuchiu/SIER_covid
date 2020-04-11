@@ -1,63 +1,77 @@
+n_runs = 10000;
+
 % json filename with age distribution for japan
-json_name = 'covid.params.json';
+json_name = 'covid.params_oka_.json';
 
-% hyperparameters
-n_curves = 5000;
+% parameters to make simulations [from Ferretti]
+mu_min = 1.495;
+mu_max = 1.798;
+sigma_min = 0.201;
+sigma_max = 0.521;
+[incubation_time_mean, incubation_time_std] = compute_mean_and_std_incubation_period(mu_min, mu_max, sigma_min, sigma_max, 1);
 
-% parameters to make simulations [from Corona tracker]
-central_incubation_period = 1.644;
-std_incubation_period = (1.798 - 1.495)/2;
-average_serial_interval = 7.2;
+shape_min = 1.75;
+shape_max = 4.7;
+scale_min = 4.7;
+scale_max = 6.9;
+[generation_time_mean, generation_time_std] = compute_mean_and_std_generation_period(shape_min, shape_max, scale_min, scale_max, 1);
+
+R0_min = 1.7;
+R0_max= 2.5;
 
 % estimates for Okinawa
-okinawa_population = 1468301;
+okinawa_population = 1433566; % estimate from 2015 census
 initial_confirmed_infected = 9;
+estimated_initial_infected = estimate_initial_cases(json_name, initial_confirmed_infected);
+estimated_initial_exposed = estimated_initial_infected; 
+                          % conservative assumption that there are as many
+                          % exposed as infected at the beginning.
 inbound_from_Naha_airport = round(18336030 / 365);
 outbound_from_Naha_airport = inbound_from_Naha_airport;
+ICU_beds = 100;
+max_ventilators = 409;
 
-time = datetime(2020,04,03,0,0,0) : datetime(2020,08,30,0,0,0);
+time = datetime(2020,04,03,0,0,0) : datetime(2020,12,31,0,0,0);
 tspan = 1 : length(time);
 
 % collecting parameters into struct
-SEIR_metaparameters = struct('tspan', tspan, 'n_curves', n_curves, ...
-                             'central_incubation_period', central_incubation_period, ...
-                             'std_incubation_period', std_incubation_period, ...
-                             'average_serial_interval', average_serial_interval, ...
+SEIR_metaparameters = struct('tspan', tspan, ...
+                             'R0_min', R0_min, ...
+                             'R0_max', R0_max, ...
+                             'incubation_time_mean', incubation_time_mean, ...
+                             'incubation_time_std', incubation_time_std, ...
+                             'generation_time_mean', generation_time_mean, ...
+                             'generation_time_std', generation_time_std, ...
                              'okinawa_population', okinawa_population, ...
-                             'initial_confirmed_infected', initial_confirmed_infected, ...
+                             'estimated_initial_exposed', estimated_initial_exposed, ...
+                             'estimated_initial_infected', estimated_initial_infected, ...
                              'inbound_from_Naha_airport', inbound_from_Naha_airport, ...
-                             'outbounf_from_Naha_airport', outbound_from_Naha_airport, ...
-                             'json_name', json_name);
-
-[t_no_cont, quantiles_infected_no_cont] = Initialize_SEIR('crude_estimates', SEIR_metaparameters);
-[t_cont, quantiles_infected_cont] = Initialize_SEIR('suppressed_crude_estimates', SEIR_metaparameters);
-
-[severe_cases_no_cont, critical_cases_no_cont, death_cases_no_cont] = severe_critical_dead_quantiles(quantiles_infected_no_cont, json_name);
-[severe_cases_cont, critical_cases_cont, death_cases_cont] = severe_critical_dead_quantiles(quantiles_infected_cont, json_name);
+                             'outbound_from_Naha_airport', outbound_from_Naha_airport);
+                         
+infected_cases_multiple = zeros(n_runs, length(time));
+severe_cases_multiple = zeros(size(infected_cases_multiple));
+death_cases_multiple = zeros(size(infected_cases_multiple));
+                         
+for i = 1 : n_runs
+    SEIR_parameters = generate_single_simulation_parameters(SEIR_metaparameters);
+    [t,compartments] = SEIR(tspan, SEIR_parameters, SEIR_metaparameters);
+    [infected_cases_multiple(i, :) , severe_cases_multiple(i, :), death_cases_multiple(i, :)] = severe_critical_dead(compartments, json_name);
+end
+                         
+quantile_ranges = [0.05, 0.5, 0.95];
+quantile_infections = quantile(infected_cases_multiple, quantile_ranges);
+quantile_severe_cases = quantile(severe_cases_multiple, quantile_ranges);
+quantile_deaths = quantile(death_cases_multiple, quantile_ranges);
 
 figure(1)
-subplot(1,2,1)
-plot_stuff(time, quantiles_infected_no_cont, 'Infected no containment')
-subplot(1,2,2)
-plot_stuff(time, quantiles_infected_cont, 'Infected containment')
+plot_stuff(time, quantile_infections, 'infected people')
 
 figure(2)
-subplot(1,2,1)
-plot_stuff(time, severe_cases_no_cont, 'Severe cases no containment')
-subplot(1,2,2)
-plot_stuff(time, severe_cases_cont, 'Severe cases containment')
+plot_stuff(time, quantile_severe_cases, 'severe cases')
+hold all
+plot([time(1), time(end)], [1, 1] * ICU_beds, 'DisplayName', 'ICU beds')
+plot([time(1), time(end)], [1, 1] * max_ventilators, 'DisplayName','max ventilators')
+hold off
 
 figure(3)
-subplot(1,2,1)
-plot_stuff(time, critical_cases_no_cont, 'Critical cases no containment')
-subplot(1,2,2)
-plot_stuff(time, critical_cases_cont, 'Critical cases containment')
-
-total_deaths_no_cont = compute_total_deaths(death_cases_no_cont, 'without containment');
-total_deaths_cont = compute_total_deaths(death_cases_cont, 'with containment');
-
-
-% 9 infected at Friday 3rd of April
-% 18 infected at Monday 6th of April
-% 34 infected at Tuesday 7th of April
-% 39 infected at Wednesday 8th of Aprildisp([' best case scenario: ' num2str(total_deaths_no_containments(1))])
+plot_stuff(time, quantile_deaths, 'death cases')
