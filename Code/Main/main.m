@@ -19,6 +19,9 @@ scale_max = 6.9;
 R0_min = 1.7;
 R0_max= 2.5;
 
+% R0 suppression from Flaxman
+suppression_distributions = get_Flaxman_R0_suppression_distributions();
+
 % estimates for Okinawa
 okinawa_population = 1433566; % estimate from 2015 census
 initial_confirmed_infected = 9;
@@ -31,8 +34,11 @@ outbound_from_Naha_airport = inbound_from_Naha_airport;
 ICU_beds = 100;
 max_ventilators = 409;
 
+% Other parameters
 time = datetime(2020,04,03,0,0,0) : datetime(2020,12,31,0,0,0);
 tspan = 1 : length(time);
+CI_interval = 0.9;
+
 
 % collecting parameters into struct
 SEIR_metaparameters = struct('tspan', tspan, ...
@@ -42,36 +48,26 @@ SEIR_metaparameters = struct('tspan', tspan, ...
                              'incubation_time_std', incubation_time_std, ...
                              'generation_time_mean', generation_time_mean, ...
                              'generation_time_std', generation_time_std, ...
+                             'suppression_distributions', suppression_distributions, ...
                              'okinawa_population', okinawa_population, ...
                              'estimated_initial_exposed', estimated_initial_exposed, ...
                              'estimated_initial_infected', estimated_initial_infected, ...
                              'inbound_from_Naha_airport', inbound_from_Naha_airport, ...
-                             'outbound_from_Naha_airport', outbound_from_Naha_airport);
+                             'outbound_from_Naha_airport', outbound_from_Naha_airport, ...
+                             'CI_interval', CI_interval);
                          
-infected_cases_multiple = zeros(n_runs, length(time));
-severe_cases_multiple = zeros(size(infected_cases_multiple));
-death_cases_multiple = zeros(size(infected_cases_multiple));
-                         
-for i = 1 : n_runs
-    SEIR_parameters = generate_single_simulation_parameters(SEIR_metaparameters);
-    [t,compartments] = SEIR(tspan, SEIR_parameters, SEIR_metaparameters);
-    [infected_cases_multiple(i, :) , severe_cases_multiple(i, :), death_cases_multiple(i, :)] = severe_critical_dead(compartments, json_name);
-end
-                         
-quantile_ranges = [0.05, 0.5, 0.95];
-quantile_infections = quantile(infected_cases_multiple, quantile_ranges);
-quantile_severe_cases = quantile(severe_cases_multiple, quantile_ranges);
-quantile_deaths = quantile(death_cases_multiple, quantile_ranges);
+% Run bathc of seir simulation and extract quantile information                         
+[quantile_infections, quantile_severe_cases, quantile_deaths] = initialize_SEIR_batch(n_runs, time, tspan, json_name, SEIR_metaparameters);
 
 figure(1)
-plot_stuff(time, quantile_infections, 'infected people')
+plot_stuff(time, quantile_infections, 'infected people', SEIR_metaparameters)
 
 figure(2)
-plot_stuff(time, quantile_severe_cases, 'severe cases')
+plot_stuff(time, quantile_severe_cases, 'severe cases', SEIR_metaparameters)
 hold all
 plot([time(1), time(end)], [1, 1] * ICU_beds, 'DisplayName', 'ICU beds')
 plot([time(1), time(end)], [1, 1] * max_ventilators, 'DisplayName','max ventilators')
 hold off
 
 figure(3)
-plot_stuff(time, quantile_deaths, 'death cases')
+plot_stuff(time, quantile_deaths, 'death cases', SEIR_metaparameters)
