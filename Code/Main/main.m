@@ -1,5 +1,5 @@
 function main(start_containment_date, equation_type, plot_results)
-    n_runs = 10000;
+    n_runs = 20000;
 
     % json filename with age distribution for japan
     json_name = 'covid.params_oka_.json';
@@ -17,9 +17,12 @@ function main(start_containment_date, equation_type, plot_results)
     scale_max = 6.9;
     [generation_time_mean, generation_time_std] = compute_mean_and_std_generation_period(shape_min, shape_max, scale_min, scale_max, 1);
 
+    
     R0_min = 1.7;
+    R0_median = 2.0;
     R0_max= 2.5;
-
+    R0_distribution = makedist('Triangular', 'a', R0_min, 'b', R0_median, 'c', R0_max);
+    
     % R0 suppression from Flaxman
     suppression_distributions = get_Flaxman_R0_suppression_distributions();
 
@@ -36,7 +39,7 @@ function main(start_containment_date, equation_type, plot_results)
     max_ventilators = 409;
 
     % Other parameters
-    time = datetime(2020,04,03,0,0,0) : datetime(2020,12,31,0,0,0);
+    time = datetime(2020,03,23,0,0,0) : datetime(2020,12,31,0,0,0);
     tspan = 1 : length(time);
     start_containment_date_dummified = tspan(time == start_containment_date);
     CI_interval = 0.9;
@@ -44,8 +47,7 @@ function main(start_containment_date, equation_type, plot_results)
 
     % collecting parameters into struct
     SEIR_metaparameters = struct('tspan', tspan, ...
-                                 'R0_min', R0_min, ...
-                                 'R0_max', R0_max, ...
+                                 'R0_distribution', R0_distribution, ...
                                  'incubation_time_mean', incubation_time_mean, ...
                                  'incubation_time_std', incubation_time_std, ...
                                  'generation_time_mean', generation_time_mean, ...

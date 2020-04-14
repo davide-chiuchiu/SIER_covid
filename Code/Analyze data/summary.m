@@ -1,7 +1,7 @@
 function summary(time, quantile_infections, quantile_severe, quantile_deaths, max_ventilators, label)
-    [infection_peak, t_max_infection_peak] = max(quantile_infections, [], 2);
-    [severe_peak, t_max_severe_peak] = max(quantile_severe, [], 2);
-    [death_max, t_max_death] = max(quantile_deaths, [], 2);
+   [infection_peak, t_max_infection_peak] = max(quantile_infections, [], 2);
+   [severe_peak, t_max_severe_peak] = max(quantile_severe, [], 2);
+   [death_max, t_max_death] = max(quantile_deaths, [], 2);
     
    
    [~, zero_infection_iter] = max(quantile_infections == 0, [], 2);
