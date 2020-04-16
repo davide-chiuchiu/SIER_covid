@@ -2,8 +2,8 @@ function SEIR_parameters = generate_single_simulation_parameters(SEIR_metaparame
     % ditribution shapes are confirmed by inspection from the original
     % distributions
     R0 = random(SEIR_metaparameters.R0_distribution, 1, 1) ;
-    incubation_time = SEIR_metaparameters.incubation_time_mean + randn(1) * SEIR_metaparameters.incubation_time_std;
-    infectious_time = SEIR_metaparameters.generation_time_mean + 4 * (rand(1) - 0.5) * SEIR_metaparameters.generation_time_std;
+    incubation_time = random(SEIR_metaparameters.incubation_time_distribution, 1, 1);
+    infectious_time = random(SEIR_metaparameters.generation_time_distribution, 1, 1);
                       % also known as generation time;
     
     % suppression parameters from Flaxman et al 

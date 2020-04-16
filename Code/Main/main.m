@@ -1,5 +1,5 @@
 function main(start_containment_date, equation_type, plot_results)
-    n_runs = 20000;
+    n_runs = 200%20000;
 
     % json filename with age distribution for japan
     json_name = 'covid.params_oka_.json';
@@ -10,13 +10,15 @@ function main(start_containment_date, equation_type, plot_results)
     sigma_min = 0.201;
     sigma_max = 0.521;
     [incubation_time_mean, incubation_time_std] = compute_mean_and_std_incubation_period(mu_min, mu_max, sigma_min, sigma_max, 1);
-
+    incubation_time_distribution = makedist('Normal', 'mu', incubation_time_mean, 'sigma', incubation_time_std);
+    
+    
     shape_min = 1.75;
     shape_max = 4.7;
     scale_min = 4.7;
     scale_max = 6.9;
     [generation_time_mean, generation_time_std] = compute_mean_and_std_generation_period(shape_min, shape_max, scale_min, scale_max, 1);
-
+    generation_time_distribution = makedist('Uniform', 'lower', generation_time_mean - 2 * generation_time_std, 'upper', generation_time_mean + 2 * generation_time_std);
     
     R0_min = 1.7;
     R0_median = 2.0;
@@ -26,9 +28,9 @@ function main(start_containment_date, equation_type, plot_results)
     % from Okinawa data
     mean_doubling_time = 5;
     std_doubling_time = 1;
-    doubling_time_distribution = makedist('Triangular', 'a', mean_doubling_time - std_doubling_time, 'b', mean_doubling_time, 'c', mean_doubling_time + std_doubling_time);
+    doubling_time_distribution = makedist('Uniform', 'lower', mean_doubling_time - std_doubling_time, 'upper', mean_doubling_time + std_doubling_time);
     
-    test_distribution_doubling_times(incubation_time_mean, incubation_time_std, generation_time_mean, generation_time_std, R0_distribution, doubling_time_distribution);
+    test_distribution_doubling_times(incubation_time_distribution, generation_time_distribution, R0_distribution, doubling_time_distribution);
     
     % R0 suppression from Flaxman
     suppression_distributions = get_Flaxman_R0_suppression_distributions();
@@ -55,10 +57,8 @@ function main(start_containment_date, equation_type, plot_results)
     % collecting parameters into struct
     SEIR_metaparameters = struct('tspan', tspan, ...
                                  'R0_distribution', R0_distribution, ...
-                                 'incubation_time_mean', incubation_time_mean, ...
-                                 'incubation_time_std', incubation_time_std, ...
-                                 'generation_time_mean', generation_time_mean, ...
-                                 'generation_time_std', generation_time_std, ...
+                                 'incubation_time_distribution', incubation_time_distribution, ...
+                                 'generation_time_distribution', generation_time_distribution, ...
                                  'suppression_distributions', suppression_distributions, ...
                                  'okinawa_population', okinawa_population, ...
                                  'estimated_initial_exposed', estimated_initial_exposed, ...
