@@ -1,5 +1,5 @@
 function main(start_containment_date, equation_type, plot_results)
-    n_runs = 200%20000;
+    n_runs = 20000;
 
     % json filename with age distribution for japan
     json_name = 'covid.params_oka_.json';
@@ -29,15 +29,18 @@ function main(start_containment_date, equation_type, plot_results)
     mean_doubling_time = 5;
     std_doubling_time = 1;
     doubling_time_distribution = makedist('Uniform', 'lower', mean_doubling_time - std_doubling_time, 'upper', mean_doubling_time + std_doubling_time);
-    
-    test_distribution_doubling_times(incubation_time_distribution, generation_time_distribution, R0_distribution, doubling_time_distribution);
+
+    % testing R0 sitribution from Flakman with doubling times observed in
+    % okinawa and overriding it because it doed not reproduce the correct
+    % doubling time
+    R0_distribution = test_distribution_doubling_times(incubation_time_distribution, generation_time_distribution, R0_distribution, doubling_time_distribution);
     
     % R0 suppression from Flaxman
     suppression_distributions = get_Flaxman_R0_suppression_distributions();
 
     % estimates for Okinawa
     okinawa_population = 1433566; % estimate from 2015 census
-    initial_confirmed_infected = 9;
+    initial_confirmed_infected = 5; % this number is to have that there are 25 infected people on the 15th of March.
     estimated_initial_infected = estimate_initial_cases(json_name, initial_confirmed_infected);
     estimated_initial_exposed = estimated_initial_infected; 
                               % conservative assumption that there are as many
