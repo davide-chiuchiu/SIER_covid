@@ -1,4 +1,4 @@
-function summary(time, quantile_infections, quantile_severe, quantile_deaths, max_ventilators, label)
+function summary(time, quantile_infections, quantile_severe, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time, max_ventilators, label)
    [infection_peak, t_max_infection_peak] = max(quantile_infections, [], 2);
    [severe_peak, t_max_severe_peak] = max(quantile_severe, [], 2);
    [death_max, t_max_death] = max(quantile_deaths, [], 2);
@@ -20,12 +20,14 @@ function summary(time, quantile_infections, quantile_severe, quantile_deaths, ma
     disp('  ')
     disp('Infection peak')
     disp('  ')
-    scenarios(round(infection_peak), t_max_infection_peak, time)
+    %scenarios(round(infection_peak), t_max_infection_peak, time)
+    peak_scenarios(peak_infected_scenarios, peak_infected_scenarios_time)
     disp('  ')
     disp('  ')
     disp('Severe peak')
     disp('  ')
-    scenarios(round(severe_peak), t_max_severe_peak, time)
+    %scenarios(round(severe_peak), t_max_severe_peak, time)
+    peak_scenarios(peak_severe_scenarios, peak_severe_scenarios_time)
     disp('  ')
     disp('  ')
     disp('Total deaths')
@@ -46,6 +48,14 @@ function summary(time, quantile_infections, quantile_severe, quantile_deaths, ma
 
 end
 
+function peak_scenarios(data, time)
+    disp('BEST CASE SCENARIO')
+    disp([num2str(data(1)) ' cases on ' datestr(time(1))] )
+    disp('MEAN CASE SCENARIO')
+    disp([num2str(data(2)) ' cases on ' datestr(time(2))] )
+    disp('WORST CASE SCENARIO')
+    disp([num2str(data(3)) ' cases on ' datestr(time(3))] )
+end
 
 function scenarios(data, index_data, time)
     disp('BEST CASE SCENARIO')

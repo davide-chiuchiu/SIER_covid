@@ -3,6 +3,6 @@ function estimated_initial_cases = estimate_initial_cases(jsonfilename, initial_
     mean_detection_percentage = sum(age_distribution .* detection_percentage);   
 
  
-    estimated_initial_cases = 150;%round (initial_cases / mean_detection_percentage);
+    estimated_initial_cases = 25;%round (initial_cases / mean_detection_percentage);
     
 end

@@ -25,10 +25,10 @@ function main(start_containment_date, equation_type, plot_results)
     
     % from Okinawa data
     mean_doubling_time = 5;
-    std_doubling_time = 1;
-    doubling_time_distribution = makedist('Triangular', 'a', mean_doubling_time - std_doubling_time, 'b', mean_doubling_time, 'c', mean_doubling_time + std_doubling_time);
+    std_doubling_time = 1.5;
+    doubling_
     
-    test_distribution_doubling_times(incubation_time_mean, incubation_time_std, generation_time_mean, generation_time_std, R0_distribution, doubling_time_distribution);
+    test_distribution_doubling_times(incubation_time_mean, incubation_time_std, generation_time_mean, generation_time_std, R0_distribution);
     
     % R0 suppression from Flaxman
     suppression_distributions = get_Flaxman_R0_suppression_distributions();
