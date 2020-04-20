@@ -1,9 +1,11 @@
-function main(start_containment_date, equation_type, plot_results)
+function main(start_containment_date, equation_type, plot_results, with_seasonality)
+    startdate = datetime(2020,03,15,0,0,0);
     n_runs = 20000;
 
     % json filename with age distribution for japan
     json_name = 'covid.params_oka_.json';
-
+    %json_name = 'covid.params.json';
+    
     % parameters to make simulations [from Ferretti]
     mu_min = 1.495;
     mu_max = 1.798;
@@ -51,14 +53,14 @@ function main(start_containment_date, equation_type, plot_results)
     max_ventilators = 409;
 
     % Other parameters
-    time = datetime(2020,03,15,0,0,0) : datetime(2020,12,31,0,0,0);
+    time = startdate : datetime(2020,12,31,0,0,0);
     tspan = 1 : length(time);
     start_containment_date_dummified = tspan(time == start_containment_date);
     CI_interval = 0.9;
 
-
     % collecting parameters into struct
-    SEIR_metaparameters = struct('tspan', tspan, ...
+    SEIR_metaparameters = struct('startdate', startdate, ...
+                                 'tspan', tspan, ...
                                  'R0_distribution', R0_distribution, ...
                                  'incubation_time_distribution', incubation_time_distribution, ...
                                  'generation_time_distribution', generation_time_distribution, ...
@@ -72,7 +74,7 @@ function main(start_containment_date, equation_type, plot_results)
                                  'start_containment_date', start_containment_date_dummified);
 
     % Run bathc of seir simulation and extract quantile information                         
-    [quantile_infections, quantile_severe_cases, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time] = initialize_SEIR_batch(n_runs, time, tspan, json_name, SEIR_metaparameters, equation_type);
+    [quantile_infections, quantile_severe_cases, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time] = initialize_SEIR_batch(n_runs, time, tspan, json_name, SEIR_metaparameters, equation_type, with_seasonality);
 
     summary(time, quantile_infections, quantile_severe_cases, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time, max_ventilators,[equation_type ' containment started on ' datestr(start_containment_date)])
     
