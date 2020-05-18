@@ -1,4 +1,4 @@
-function main(n_runs, start_containment_date, equation_type, plot_results, with_seasonality)
+function main_SEIR_predictions(n_runs, start_containment_date, equation_type, plot_results, with_seasonality)
     
     % set confirmed number of initial infected people and compute all the
     % SEIR parameters from Ferretti
