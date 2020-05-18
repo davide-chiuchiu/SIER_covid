@@ -21,6 +21,10 @@ function main_SEIR_predictions(n_runs, start_containment_date, equation_type, pl
     % doubling time
     SEIR_metaparameters.R0_distribution = test_distribution_doubling_times(SEIR_metaparameters);
 
+    % add distribution of R0 suppression from Flaxman to
+    % SEIR_metaparemeters
+    SEIR_metaparameters.suppression_distributions = get_Flaxman_R0_suppression_distributions();
+    
     % Run batch of seir simulation and extract quantile information                         
     [quantile_infections, quantile_severe_cases, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time] = initialize_SEIR_batch(n_runs, time, tspan, SEIR_metaparameters.json_name, SEIR_metaparameters, equation_type, with_seasonality);
     summary(time, quantile_infections, quantile_severe_cases, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time, SEIR_metaparameters.max_ventilators,[equation_type ' containment started on ' datestr(start_containment_date)])

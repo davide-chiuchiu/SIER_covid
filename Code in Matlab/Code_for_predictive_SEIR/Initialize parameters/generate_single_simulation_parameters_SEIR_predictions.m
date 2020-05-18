@@ -1,4 +1,4 @@
-function SEIR_parameters = generate_single_simulation_parameters(SEIR_metaparameters)
+function SEIR_parameters = generate_single_simulation_parameters_SEIR_predictions(SEIR_metaparameters)
     % ditribution shapes are confirmed by inspection from the original
     % distributions
     R0 = random(SEIR_metaparameters.R0_distribution, 1, 1) ;
