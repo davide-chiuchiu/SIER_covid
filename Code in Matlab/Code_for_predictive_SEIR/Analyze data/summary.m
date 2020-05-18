@@ -1,17 +1,11 @@
 function summary(time, quantile_infections, quantile_severe, quantile_deaths, peak_infected_scenarios, peak_infected_scenarios_time, peak_severe_scenarios, peak_severe_scenarios_time, max_ventilators, label)
-   [infection_peak, t_max_infection_peak] = max(quantile_infections, [], 2);
-   [severe_peak, t_max_severe_peak] = max(quantile_severe, [], 2);
    [death_max, t_max_death] = max(quantile_deaths, [], 2);
     
-   
    [~, zero_infection_iter] = max(quantile_infections == 0, [], 2);
    zero_infected_time = time(zero_infection_iter);
    
    [~, ICU_overflow_iter] = max(quantile_severe > max_ventilators, [], 2);
-   ICU_overflow_time = time(ICU_overflow_iter);
-
-
-   
+   ICU_overflow_time = time(ICU_overflow_iter);   
     
     disp('-----------------------------------------')
     disp('-----------------------------------------')

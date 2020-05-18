@@ -10,5 +10,5 @@ end
 
 function cases_of_case = get_cases(quantiles, age_distribution, case_percentage)
     mean_case_percentage = sum(age_distribution .* case_percentage);
-    cases_of_case = round(quantiles * mean_case_percentage);
+    cases_of_case = (quantiles * mean_case_percentage);
 end

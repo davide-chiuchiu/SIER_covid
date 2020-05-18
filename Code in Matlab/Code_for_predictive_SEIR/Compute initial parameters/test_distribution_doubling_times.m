@@ -1,16 +1,16 @@
-function R0_distribution_override = test_distribution_doubling_times(incubation_time_distribution, generation_time_distribution, R0_distribution, doubling_time_distribution)
+function R0_distribution_override = test_distribution_doubling_times(SEIR_metaparameters)
     n_points = 20000;
-    R0 = random(R0_distribution, 1, n_points) ;
-    incubation_time = random(incubation_time_distribution, 1, n_points);
-    infectious_time = random(generation_time_distribution, 1, n_points);
-    doubling_time = random(doubling_time_distribution, 1, n_points);
+    R0 = random(SEIR_metaparameters.R0_distribution, 1, n_points) ;
+    incubation_time = random(SEIR_metaparameters.incubation_time_distribution, 1, n_points);
+    infectious_time = random(SEIR_metaparameters.generation_time_distribution, 1, n_points);
+    doubling_time = random(SEIR_metaparameters.doubling_time_distribution, 1, n_points);
     
     doub_time = estimate_doubling_time(R0, infectious_time, incubation_time);
     doub_time_simone = estimate_doubling_time(2.2, 3, 3);
     R0_from_doubling_time = compute_R0_from_doubling_tim(doubling_time, infectious_time, incubation_time);
     R0_from_doubling_time_mean = mean(R0_from_doubling_time);
     R0_from_doubling_time_std = std(R0_from_doubling_time);
-    R0_distribution_override = makedist('Normal', 'mu', R0_from_doubling_time_mean, 'sigma', R0_from_doubling_time_std)
+    R0_distribution_override = makedist('Normal', 'mu', R0_from_doubling_time_mean, 'sigma', R0_from_doubling_time_std);
     
     figure(121)
     histogram(doub_time, 'DisplayName', 'Estimated from Ferretti R_0')
