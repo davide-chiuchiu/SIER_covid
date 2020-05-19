@@ -12,6 +12,8 @@ function R0_suppression_coefficient = suppression_policy(t, SEIR_parameters, SEI
   
         % estimate R_0 suppression factor with the Flakman data.
         R0_suppression_coefficient =  interp1(intervention_times, intervention_efficacy, t, 'previous', 'extrap');       
+    elseif strcmp(equation_type, 'R0_step_change')
+        R0_suppression_coefficient = 1 - SEIR_parameters.R0_supp_containment * heaviside(t - SEIR_parameters.time_of_suppression);
     else
         error('unknown equation type ') 
     end

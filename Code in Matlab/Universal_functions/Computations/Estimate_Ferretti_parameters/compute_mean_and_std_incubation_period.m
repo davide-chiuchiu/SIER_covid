@@ -1,5 +1,5 @@
 function [t_mean_mean, t_mean_std] = compute_mean_and_std_incubation_period(mu_min, mu_max, sigma_min, sigma_max, to_plot)
-    n_estimations = 50000;
+    n_estimations = 500000;
     mu = mu_min + (mu_max - mu_min) * rand(1, n_estimations);
     sigma = sigma_min + (sigma_max - sigma_min) * rand(1, n_estimations);
 

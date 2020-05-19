@@ -42,6 +42,9 @@ function SEIR_metaparameters = initialize_SEIR_metaparameters(initial_confirmed_
 
     % Other parameters    
     CI_interval = 0.9;
+    [age_distribution, ~, ~, ~, detection_percentage] = read_china_japan_json_data(json_name);
+    mean_detection_percentage = sum(age_distribution .* detection_percentage);
+    
 
     % collecting parameters into struct
     SEIR_metaparameters = struct('R0_distribution', R0_distribution, ...
@@ -55,6 +58,7 @@ function SEIR_metaparameters = initialize_SEIR_metaparameters(initial_confirmed_
                                  'outbound_from_Naha_airport', outbound_from_Naha_airport, ...
                                  'CI_interval', CI_interval, ...
                                  'json_name', json_name, ...
-                                 'ICU_beds', ICU_beds, 'max_ventilators', max_ventilators);
+                                 'ICU_beds', ICU_beds, 'max_ventilators', max_ventilators, ...
+                                 'mean_detection_percentage', mean_detection_percentage);
 
 end

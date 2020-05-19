@@ -5,7 +5,7 @@ function [quantile_infections, quantile_severe_cases, quantile_deaths, peak_infe
 
     for i = 1 : n_runs
         SEIR_parameters = generate_single_simulation_parameters_SEIR_predictions(SEIR_metaparameters);
-        [~ ,compartments] = SEIR(tspan, SEIR_parameters, SEIR_metaparameters, equation_type, with_seasonality);
+        [~ ,compartments] = SEIR(SEIR_parameters, SEIR_metaparameters, equation_type, with_seasonality);
         [infected_cases_multiple(i, :) , severe_cases_multiple(i, :), death_cases_multiple(i, :)] = severe_critical_dead(compartments, json_name);
     end
     

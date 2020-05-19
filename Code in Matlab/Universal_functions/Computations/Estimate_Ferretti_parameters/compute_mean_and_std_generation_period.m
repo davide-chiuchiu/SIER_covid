@@ -1,5 +1,5 @@
 function [t_mean_mean, t_mean_std] = compute_mean_and_std_generation_period(shape_min, shape_max, scale_min, scale_max, to_plot)
-    n_estimations = 50000;
+    n_estimations = 500000;
     shape = shape_min + (shape_max - shape_min) * rand(1, n_estimations);
     scale = scale_min + (scale_max - scale_min) * rand(1, n_estimations);
 
