@@ -1,7 +1,7 @@
 % import Okinawa measures
 okinawa_data = import_okinawa_data();
-% cut data before the 2nd of april (remove 24 rows)
-okinawa_data = okinawa_data(24 : end, :);
+% cut data
+okinawa_data = okinawa_data(10 : end, :);
 
 % Initialize SEIR parameters from Ferretti without an estimate for the
 % initial number of infected people
@@ -15,18 +15,18 @@ SEIR_metaparameters.tspan = tspan;
 % Add a smoothened curve of the cumulative confirmed cases to SEIR
 % metaparameters struct
 moving_window = 4;
-SEIR_metaparameters.cumulative_confirmed_cases = movmean(okinawa_data.testedPositive, moving_window);
+SEIR_metaparameters.cumulative_confirmed_cases = okinawa_data.testedPositive/okinawa_data.testedPositive(end);
 
 % initialize parameter bounds and initial points for the optimization
-SEIR_metaparameters.single_variable_grid_size = 2;
-SEIR_metaparameters.random_points = 100;
+SEIR_metaparameters.single_variable_grid_size = 6;
+SEIR_metaparameters.random_points = 20000;
 total_points = 6^SEIR_metaparameters.single_variable_grid_size + SEIR_metaparameters.random_points;
 [lower_bounds, upper_bounds, initial_points] = generate_parameter_constraints_and_initial_points(SEIR_metaparameters);
 
 % initialize linear constraints.
 % First line it to have that the initial exposed are not more than 20 times
 % the initial infected
-Aineq = [0 0 0 -20 +1, 0];
+Aineq = [0 0 0 -20 +1];
 bineq = 0;
 
 % perform the optimization
