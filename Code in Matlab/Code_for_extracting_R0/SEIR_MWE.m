@@ -20,7 +20,7 @@ function SEIR_MWE()
     if isempty(gcp('nocreate')) == 1 
         parpool;
     end
-    optimized_variables = run(MultiStart('UseParallel', true), optimization_problem, 800);
+    optimized_variables = run(MultiStart('UseParallel', true), optimization_problem, 200);
     toc
     optimized_cumulative_infected = wrapper_to_initialize_SEIR(optimized_variables, parameters, tspan);
     
@@ -104,8 +104,8 @@ end
 function mean_square_deviation = compute_deviations(true_cumulative_infected, random_variables, parameters, tspan)
     random_cumulative_infected = wrapper_to_initialize_SEIR(random_variables, parameters, tspan);
     
-    log_normalized_true_cumulative = log(true_cumulative_infected/true_cumulative_infected(end));
-    log_normalized_random_cumulative = log(random_cumulative_infected/random_cumulative_infected(end));
+    log_normalized_true_cumulative = log(true_cumulative_infected);
+    log_normalized_random_cumulative = log(random_cumulative_infected);
     
     mean_square_deviation = sqrt(mean((log_normalized_random_cumulative - log_normalized_true_cumulative).^2));
 end
