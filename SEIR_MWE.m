@@ -1,5 +1,5 @@
 function SEIR_MWE()
-    tspan = 1:365;
+    tspan = 1:90;
     
    parameters = struct('Okinawa_population', 1433566, ...
               'infectious_time', 3, ...
@@ -20,7 +20,7 @@ function SEIR_MWE()
     if isempty(gcp('nocreate')) == 1 
         parpool;
     end
-    optimized_variables = run(MultiStart('UseParallel', true), optimization_problem, 200);
+    optimized_variables = run(MultiStart('UseParallel', true), optimization_problem, 800);
     toc
     optimized_cumulative_infected = wrapper_to_initialize_SEIR(optimized_variables, parameters, tspan);
     
@@ -57,7 +57,7 @@ end
 function R0_suppression_factor = compute_R0_suppression(t, variables)
     R0_suppression = variables(2);
     suppression_time = variables(3);
-    R0_suppression_factor = 1  - (1 - R0_suppression) .* heaviside(t - suppression_time);
+    R0_suppression_factor = 1  - R0_suppression .* heaviside(t - suppression_time);
 end
 
 function cumulative_infected = wrapper_to_initialize_SEIR(variables, parameters, tspan)
@@ -71,11 +71,11 @@ function cumulative_infected = wrapper_to_initialize_SEIR(variables, parameters,
 end
 
 function [true_variables, random_variables, upper_bounds, lower_bounds] = generate_initial_point()
-    R0_value = 2.7;
+    R0_value = 2.3;
     R0_suppression = 0.65;
-    suppression_time = 20;
-    initial_infected = 130;
-    initial_exposed = 290;
+    suppression_time = 10;
+    initial_infected = 13;
+    initial_exposed = 22;
     true_variables = [R0_value, R0_suppression, suppression_time, initial_infected, initial_exposed];
     
     random_R0_value = 2.1;
@@ -104,8 +104,8 @@ end
 function mean_square_deviation = compute_deviations(true_cumulative_infected, random_variables, parameters, tspan)
     random_cumulative_infected = wrapper_to_initialize_SEIR(random_variables, parameters, tspan);
     
-    log_normalized_true_cumulative = log(true_cumulative_infected/true_cumulative_infected(1));
-    log_normalized_random_cumulative = log(random_cumulative_infected/random_cumulative_infected(1));
+    log_normalized_true_cumulative = log(true_cumulative_infected/true_cumulative_infected(end));
+    log_normalized_random_cumulative = log(random_cumulative_infected/random_cumulative_infected(end));
     
     mean_square_deviation = sqrt(mean((log_normalized_random_cumulative - log_normalized_true_cumulative).^2));
 end
