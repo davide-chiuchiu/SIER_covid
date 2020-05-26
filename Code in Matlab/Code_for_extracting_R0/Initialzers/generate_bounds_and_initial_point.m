@@ -5,10 +5,10 @@
 % half of wich are randomly generated, and half of which are taken unifomly
 % spaced between the lower and upper bounds of the variables
 
-function [upper_bounds, lower_bounds, initial_points] = generate_bounds_and_initial_point(num_points)    
-    R0_value_upper_bound = 10;
+function [upper_bounds, lower_bounds, initial_points] = generate_bounds_and_initial_point(num_points, parameters)    
+    R0_value_upper_bound = 5;
     R0_suppression_upper_bound = 1;
-    suppression_time_upper_bound = 365;
+    suppression_time_upper_bound = parameters.tspan(end);
     initial_infected_upper_bound = 1000;
     initial_exposed_upper_bound = 1000;    
     upper_bounds = [R0_value_upper_bound, R0_suppression_upper_bound, suppression_time_upper_bound, initial_infected_upper_bound, initial_exposed_upper_bound];
