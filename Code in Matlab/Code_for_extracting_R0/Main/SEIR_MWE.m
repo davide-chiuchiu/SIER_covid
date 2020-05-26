@@ -1,15 +1,21 @@
-function SEIR_MWE(num_initial_points)
-    tspan = 1:90;
+function [optimized_variables, optimized_detected_infected, Okinawa_data] = SEIR_MWE(num_initial_points)
+
+
+    % import data from Okinawa
+    case_treshold = 7;
+    Okinawa_file = "Data/Okinawa_infection_data/Okinawa_cases_tests.csv";
+    Okinawa_data = readtable(Okinawa_file);
+    time = Okinawa_data.date(Okinawa_data.testedPositive > case_treshold);
+    tspan = 1 : length(time);
+    
     % Initialize fixed parameters for simulation
     parameters = struct('Okinawa_population', 1433566, ...
-              'infectious_time', 3, ...
-              'incubation_time', 5, ...
-              'tspan', tspan); 
-          
-    % add measures cumulative infected to parameters.  
-    true_variables = [2.3 0.65 10 13 22];
-    parameters.true_cumulative_infected = add_noise(compute_cumulative_infected(true_variables, parameters));
-    
+              'incubation_time', 3, ...
+              'infectious_time', 5, ...
+              'detection_percentage', 0.1, ...
+              'tspan', tspan, ...
+              'true_detected_infected', Okinawa_data.testedPositive(Okinawa_data.testedPositive > case_treshold)); 
+            
     % Initialize upper and lower bounds and initial points for the
     % simulation
     [upper_bounds, lower_bounds, initial_points] = generate_bounds_and_initial_point(num_initial_points);
@@ -31,18 +37,15 @@ function SEIR_MWE(num_initial_points)
     tic
     optimized_variables = run(MultiStart('UseParallel', true), optimization_problem, initial_points);
     toc
-    optimized_cumulative_infected = compute_cumulative_infected(optimized_variables, parameters);
+    optimized_detected_infected = parameters.detection_percentage * compute_cumulative_infected(optimized_variables, parameters);
     
     % visual_inspection
-    disp(true_variables)
     disp(optimized_variables)
-    
     figure(15)
-    plot(tspan, parameters.true_cumulative_infected / parameters.Okinawa_population)
+    plot(time, parameters.true_detected_infected / parameters.Okinawa_population)
     hold all
-    plot(tspan, optimized_cumulative_infected / parameters.Okinawa_population, 'r')
-    hold off
-    
+    plot(time, optimized_detected_infected / parameters.Okinawa_population, 'r')
+    hold off    
 end
 
 function noised_cumulative_infected = add_noise(true_cumulative_infected)

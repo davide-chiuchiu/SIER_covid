@@ -4,9 +4,9 @@
 % specified by "variables" and "parameters"
 
 function mean_square_deviation = compute_mean_square_deviation(variables, parameters)
-    true_cumulative_infected = parameters.true_cumulative_infected; 
-    random_cumulative_infected = compute_cumulative_infected(variables, parameters);
-    log_normalized_true_cumulative = log(true_cumulative_infected);
-    log_normalized_random_cumulative = log(random_cumulative_infected);
-    mean_square_deviation = sqrt(mean((log_normalized_random_cumulative - log_normalized_true_cumulative).^2));
+    true_detected_infected = parameters.true_detected_infected; 
+    computed_cumulative_infected =  parameters.detection_percentage * compute_cumulative_infected(variables, parameters);
+    log_true_detected_cumulative = log(true_detected_infected);
+    log_computed_detected_cumulative = log(computed_cumulative_infected);
+    mean_square_deviation = sqrt(mean((log_computed_detected_cumulative - log_true_detected_cumulative).^2));
 end

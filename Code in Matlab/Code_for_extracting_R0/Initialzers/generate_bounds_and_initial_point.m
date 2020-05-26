@@ -24,7 +24,8 @@ function [upper_bounds, lower_bounds, initial_points] = generate_bounds_and_init
     initial_points_rand = repmat(lower_bounds, half_points, 1) + rand(half_points, length(lower_bounds)) .* repmat(upper_bounds - lower_bounds, half_points, 1); 
     
     grid_points_number = round(nthroot(half_points, length(upper_bounds)));
-    grid_points_number = ndspace(lower_bounds, upper_bounds, grid_points_number);
+    initial_points_grid = ndspace(lower_bounds, upper_bounds, grid_points_number);
+    initial_points_mixed = [initial_points_rand; initial_points_grid];
     
-    initial_points = CustomStartPointSet([initial_points_rand; grid_points_number]);
+    initial_points = CustomStartPointSet(initial_points_mixed);
 end
