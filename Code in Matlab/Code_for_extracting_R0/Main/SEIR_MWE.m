@@ -1,20 +1,20 @@
-function [R0_value, R0_suppression, start_time, suppression_time] = SEIR_MWE(num_initial_points)
+function [R0_value, R0_suppression, start_time, suppression_time] = SEIR_MWE(num_initial_points, file_to_load, total_population)
 
 
     % import data from Okinawa
     case_treshold = 7;
-    file_to_load = "Data/Okinawa_infection_data/Okinawa_cases_tests.csv";
     loaded_data = readtable(file_to_load);
-    time = loaded_data.date(loaded_data.testedPositive > case_treshold);
+    
+    time = loaded_data.time(loaded_data.cases > case_treshold);
     tspan = 1 : length(time);
     
     % Initialize fixed parameters for simulation
-    parameters = struct('total_population', 1433566, ...
+    parameters = struct('total_population', total_population, ...
               'incubation_time', 3.5868, ...
               'infectious_time', 7.2042, ...
               'detection_percentage', 0.2045, ...
               'tspan', tspan, ...
-              'true_detected_infected', loaded_data.testedPositive(loaded_data.testedPositive > case_treshold)); 
+              'true_detected_infected', loaded_data.cases(loaded_data.cases > case_treshold)); 
             
     % Initialize upper and lower bounds and initial points for the
     % simulation
