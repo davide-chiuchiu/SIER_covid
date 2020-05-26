@@ -1,20 +1,20 @@
-function [optimized_variables, optimized_detected_infected, Okinawa_data] = SEIR_MWE(num_initial_points)
+function [R0_value, R0_suppression, start_time, suppression_time] = SEIR_MWE(num_initial_points)
 
 
     % import data from Okinawa
     case_treshold = 7;
-    Okinawa_file = "Data/Okinawa_infection_data/Okinawa_cases_tests.csv";
-    Okinawa_data = readtable(Okinawa_file);
-    time = Okinawa_data.date(Okinawa_data.testedPositive > case_treshold);
+    file_to_load = "Data/Okinawa_infection_data/Okinawa_cases_tests.csv";
+    loaded_data = readtable(file_to_load);
+    time = loaded_data.date(loaded_data.testedPositive > case_treshold);
     tspan = 1 : length(time);
     
     % Initialize fixed parameters for simulation
-    parameters = struct('Okinawa_population', 1433566, ...
-              'incubation_time', 3, ...
-              'infectious_time', 5, ...
-              'detection_percentage', 0.1, ...
+    parameters = struct('total_population', 1433566, ...
+              'incubation_time', 3.5868, ...
+              'infectious_time', 7.2042, ...
+              'detection_percentage', 0.2045, ...
               'tspan', tspan, ...
-              'true_detected_infected', Okinawa_data.testedPositive(Okinawa_data.testedPositive > case_treshold)); 
+              'true_detected_infected', loaded_data.testedPositive(loaded_data.testedPositive > case_treshold)); 
             
     % Initialize upper and lower bounds and initial points for the
     % simulation
@@ -40,12 +40,18 @@ function [optimized_variables, optimized_detected_infected, Okinawa_data] = SEIR
     optimized_detected_infected = parameters.detection_percentage * compute_cumulative_infected(optimized_variables, parameters);
     
     % visual_inspection
-    disp(optimized_variables)
     figure(15)
-    plot(time, parameters.true_detected_infected / parameters.Okinawa_population)
+    plot(time, parameters.true_detected_infected / parameters.total_population)
     hold all
-    plot(time, optimized_detected_infected / parameters.Okinawa_population, 'r')
-    hold off    
+    plot(time, optimized_detected_infected / parameters.total_population, 'r')
+    hold off
+    pause(3)
+    
+    R0_value = optimized_variables(1);
+    R0_suppression = optimized_variables(2);
+    start_time = time(1);
+    suppression_time = time(round(optimized_variables(3)));
+    
 end
 
 function noised_cumulative_infected = add_noise(true_cumulative_infected)

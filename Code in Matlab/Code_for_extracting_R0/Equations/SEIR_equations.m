@@ -6,7 +6,7 @@
 
 function dSEIR = SEIR_equations(t, compartments, variables, parameters)
     R0 = variables(1);
-    N  = parameters.Okinawa_population;
+    N  = parameters.total_population;
     Di = parameters.infectious_time;
     De = parameters.incubation_time;
     
