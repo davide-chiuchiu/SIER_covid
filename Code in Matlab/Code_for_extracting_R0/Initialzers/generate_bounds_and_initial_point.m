@@ -6,7 +6,7 @@
 % spaced between the lower and upper bounds of the variables
 
 function [upper_bounds, lower_bounds, initial_points] = generate_bounds_and_initial_point(num_points, parameters)    
-    R0_value_upper_bound = 5;
+    R0_value_upper_bound = 7;
     R0_suppression_upper_bound = 1;
     suppression_time_upper_bound = parameters.tspan(end);
     initial_infected_upper_bound = 1000;

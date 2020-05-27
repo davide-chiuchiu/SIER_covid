@@ -1,4 +1,4 @@
-num_initial_points = 2000;
+num_initial_points = 5000;
 
 % list of files 
 files_to_load = struct2table(dir('Data/Infection_data_all_japanese_prefectures/J*'));

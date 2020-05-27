@@ -65,6 +65,9 @@ function [R0_value, R0_suppression, start_time, suppression_time, min_deviation]
     R0_value = optimized_variables(1);
     R0_suppression = optimized_variables(2);
     start_time = time(1);
+    
+    round(optimized_variables(3))
+    
     suppression_time = time(round(optimized_variables(3)));
         
 end
